@@ -39,9 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\SetupAPI.cs" />
-    <Compile Include="API\WinApiFile.cs" />
-    <Compile Include="HID.cs" />
+    <Compile Include="WinAPI\SetupAPI.cs" />
+    <Compile Include="WinAPI\WinApiFile.cs" />
+    <Compile Include="HidDevice.cs" />
     <Compile Include="Zeitgeber.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

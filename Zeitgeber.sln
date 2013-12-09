@@ -6,8 +6,14 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zeitlib", "Zeitlib\Zeitlib.csproj", "{2DAD768D-9509-4857-B696-8A34D2137112}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "zeitctrl", "zeitctrl\zeitctrl.csproj", "{58FFDA4A-D7D4-4777-8629-305B3A5EA7C8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2DAD768D-9509-4857-B696-8A34D2137112} = {2DAD768D-9509-4857-B696-8A34D2137112}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeitgeberGUI", "ZeitgeberGUI\ZeitgeberGUI.csproj", "{34D5B1B7-BCB6-4459-AD0C-9790CD9298D8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2DAD768D-9509-4857-B696-8A34D2137112} = {2DAD768D-9509-4857-B696-8A34D2137112}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -19,6 +19,9 @@ namespace ViscTronics.ZeitCtrl
                 Console.WriteLine("Connecting...");
                 zeitgeber.Connect();
 
+                Console.WriteLine("Pinging");
+                zeitgeber.Ping();
+
             }
             catch (Exception e)
             {

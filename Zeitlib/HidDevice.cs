@@ -183,7 +183,7 @@ namespace ViscTronics
 
             return new WinApiFile(
                 this.DevicePath,
-                WinApiFile.DesiredAccess.GENERIC_WRITE,
+                WinApiFile.DesiredAccess.GENERIC_READ | WinApiFile.DesiredAccess.GENERIC_WRITE,
                 WinApiFile.ShareMode.FILE_SHARE_READ | WinApiFile.ShareMode.FILE_SHARE_WRITE,
                 WinApiFile.CreationDisposition.OPEN_EXISTING);
         }
