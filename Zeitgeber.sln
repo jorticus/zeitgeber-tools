@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zeitlib", "Zeitlib\Zeitlib.csproj", "{2DAD768D-9509-4857-B696-8A34D2137112}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "zeitctrl", "zeitctrl\zeitctrl.csproj", "{58FFDA4A-D7D4-4777-8629-305B3A5EA7C8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeitgeberGUI", "ZeitgeberGUI\ZeitgeberGUI.csproj", "{34D5B1B7-BCB6-4459-AD0C-9790CD9298D8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2DAD768D-9509-4857-B696-8A34D2137112}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DAD768D-9509-4857-B696-8A34D2137112}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DAD768D-9509-4857-B696-8A34D2137112}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DAD768D-9509-4857-B696-8A34D2137112}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58FFDA4A-D7D4-4777-8629-305B3A5EA7C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58FFDA4A-D7D4-4777-8629-305B3A5EA7C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58FFDA4A-D7D4-4777-8629-305B3A5EA7C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58FFDA4A-D7D4-4777-8629-305B3A5EA7C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34D5B1B7-BCB6-4459-AD0C-9790CD9298D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34D5B1B7-BCB6-4459-AD0C-9790CD9298D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34D5B1B7-BCB6-4459-AD0C-9790CD9298D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34D5B1B7-BCB6-4459-AD0C-9790CD9298D8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
