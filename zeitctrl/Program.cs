@@ -19,8 +19,17 @@ namespace ViscTronics.ZeitCtrl
                 Console.WriteLine("Connecting...");
                 zeitgeber.Connect();
 
-                Console.WriteLine("Pinging");
+                Console.WriteLine("Ping()");
                 zeitgeber.Ping();
+
+                //zeitgeber.SetLed(2, 1);
+
+                Console.WriteLine("GetBatteryInfo()");
+                var battery = zeitgeber.GetBatteryInfo();
+
+                Console.WriteLine(String.Format("\tlevel: {0}%", battery.Level));
+                Console.WriteLine(String.Format("\tvoltage: {0}mV", battery.Voltage));
+                Console.WriteLine(String.Format("\tpower status: {0}", battery.PowerStatus));
 
             }
             catch (Exception e)
