@@ -14,8 +14,15 @@ namespace ViscTronics.ZeitCtrl
             try
             {
                 Zeitgeber zeitgeber = new Zeitgeber();
+                
+                // Simple program for resetting the device
+                /*Console.WriteLine("Resetting Zeitgeber Unit");
+                zeitgeber.Connect();
+                zeitgeber.Reset();
 
+                System.Threading.Thread.Sleep(1000);*/
 
+                // Other system tests
                 Console.WriteLine("Connecting...");
                 zeitgeber.Connect();
 
@@ -26,11 +33,24 @@ namespace ViscTronics.ZeitCtrl
 
                 Console.WriteLine("GetBatteryInfo()");
                 var battery = zeitgeber.GetBatteryInfo();
-
                 Console.WriteLine(String.Format("\tlevel: {0}%", battery.Level));
                 Console.WriteLine(String.Format("\tvoltage: {0}mV", battery.Voltage));
                 Console.WriteLine(String.Format("\tpower status: {0}", battery.PowerStatus));
+                Console.WriteLine();
 
+                Console.WriteLine("GetCpuInfo()");
+                var cpu = zeitgeber.GetCpuInfo();
+                Console.WriteLine(String.Format("\tsystick: {0}", cpu.systick));
+                Console.WriteLine();
+
+                Console.WriteLine("QueryDisplay()");
+                var display = zeitgeber.QueryDisplay();
+                Console.WriteLine(String.Format(
+                    "\tsize: {0}x{1}x{2}bpp ({3} bytes)", 
+                    display.Width, display.Height, display.BitsPerPixel, 
+                    display.Width*display.Height*(display.BitsPerPixel/8)
+                ));
+                Console.WriteLine();
             }
             catch (Exception e)
             {

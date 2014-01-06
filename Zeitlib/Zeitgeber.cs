@@ -24,12 +24,26 @@ namespace ViscTronics.Zeitlib
 
         #region Command Constants
 
+        // Basic system commands
         private const byte CMD_PING = 0x01;
         private const byte CMD_RESET = 0x02;
         private const byte CMD_SET_LED = 0x03;
 
+        // Diagnostics
         private const byte CMD_GET_BATTERY_INFO = 0x10;
         private const byte CMD_GET_CPU_INFO = 0x11;
+
+        // Display interface
+        private const byte CMD_QUERY_DISPLAY = 0x20;
+        private const byte CMD_SET_DISPLAY_POWER = 0x21;
+        private const byte CMD_DISPLAY_OVERRIDE = 0x22;
+        private const byte CMD_UPDATE_DISPLAY_BUF = 0x23;
+        private const byte CMD_READ_DISPLAY_BUF = 0x24;
+
+        // Sensors
+        private const byte CMD_QUERY_SENSORS = 0x25;
+        private const byte CMD_SET_SENSOR_ENABLE = 0x31;
+        private const byte CMD_GET_SENSOR_DATA = 0x32;
 
         #endregion
 
@@ -61,7 +75,7 @@ namespace ViscTronics.Zeitlib
         {
             public byte WindowsReserved;
             public byte Command;
-            public byte _reserved;
+            public byte Padding;
 
             public UInt16 Level;
             public UInt16 Voltage;
@@ -78,9 +92,38 @@ namespace ViscTronics.Zeitlib
         {
             public byte WindowsReserved;
             public byte Command;
+            public byte Padding;
 
-            public UInt32 systick;
+            public UInt16 systick;
         }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = COMMAND_PACKET_SIZE)]
+        public struct DisplayQuery
+        {
+            public byte WindowsReserved;
+            public byte Command;
+            public byte Padding;
+
+            public UInt16 Width;
+            public UInt16 Height;
+            public UInt16 BitsPerPixel;
+
+            public UInt16 DisplayOn;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = COMMAND_PACKET_SIZE)]
+        public struct SensorsQuery
+        {
+            public byte WindowsReserved;
+            public byte Command;
+            public byte Padding;
+
+            public UInt16 Count;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+            public byte[] Sensors;
+        }
+
 
         #endregion
 
@@ -266,9 +309,19 @@ namespace ViscTronics.Zeitlib
             return (BatteryInfo)SendCommandPacket(new CommandStruct { Command = CMD_GET_BATTERY_INFO }, typeof(BatteryInfo));
         }
 
+        public CpuInfo GetCpuInfo()
+        {
+            return (CpuInfo)SendCommandPacket(new CommandStruct { Command = CMD_GET_CPU_INFO }, typeof(CpuInfo));
+        }
+
         #endregion
 
         #region Display
+
+        public DisplayQuery QueryDisplay()
+        {
+            return (DisplayQuery)SendCommandPacket(new CommandStruct { Command = CMD_QUERY_DISPLAY }, typeof(DisplayQuery));
+        }
 
         /*public void DisableScreenUpdates()
         {
@@ -293,6 +346,15 @@ namespace ViscTronics.Zeitlib
             // Capture whatever is currently in the screen buffer
             throw new NotImplementedException();
         }*/
+        #endregion
+
+        #region Sensors
+
+        public SensorsQuery GetSensorsInfo()
+        {
+            return (SensorsQuery)SendCommandPacket(new CommandStruct { Command = CMD_QUERY_SENSORS }, typeof(SensorsQuery));
+        }
+
         #endregion
     }
 }
