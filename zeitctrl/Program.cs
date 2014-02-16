@@ -51,6 +51,15 @@ namespace ViscTronics.ZeitCtrl
                     display.Width*display.Height*(display.BitsPerPixel/8)
                 ));
                 Console.WriteLine();
+
+                zeitgeber.SetDateTime(DateTime.Now);
+
+                Console.WriteLine("GetDateTime()");
+                var dt = zeitgeber.GetDateTime();
+                Console.WriteLine(dt.ToString());
+                Console.WriteLine("Actual:");
+                Console.WriteLine(DateTime.Now.ToString());
+                Console.WriteLine();
             }
             catch (Exception e)
             {
