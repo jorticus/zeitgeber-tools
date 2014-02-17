@@ -27,6 +27,8 @@ namespace ViscTronics.Zeitlib
         private const string DeviceId = "VID_04D8&PID_003F";  // Zeitgeber ID
         //private const string DeviceId = "Vid_04d8&Pid_003c";  // Bootloader ID
 
+        public String DeviceDescription { get { return HidDevice.DeviceDescription; } }
+
         private HidDevice HidDevice;
 
         #region Command Constants
@@ -159,6 +161,20 @@ namespace ViscTronics.Zeitlib
         {
             HidDevice = new HidDevice(DeviceId);
         }
+
+        #region Setup
+
+        /// <summary>
+        /// Install additional driver information after the HID device has been installed.
+        /// This is optional but adds a better description to the device manager.
+        /// REQUIRES ADMINISTRATOR PRIVILEGE
+        /// </summary>
+        public void InstallDriverInfo()
+        {
+            HidDevice.SetFriendlyName("ViscTronics OLED Watch");
+        }
+
+        #endregion
 
         #region Communication
 

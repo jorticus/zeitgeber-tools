@@ -22,11 +22,17 @@ namespace ViscTronics.ZeitCtrl
 
                 System.Threading.Thread.Sleep(1000);*/
 
+                zeitgeber.InstallDriverInfo();
+                //return;
+
                 // Other system tests
                 Console.WriteLine("Connecting...");
                 zeitgeber.Connect();
 
-                Console.WriteLine("Ping()");
+                Console.Write("Connected to ");
+                Console.WriteLine(zeitgeber.DeviceDescription);
+
+                 Console.WriteLine("Ping()");
                 zeitgeber.Ping();
 
                 //zeitgeber.SetLed(2, 1);

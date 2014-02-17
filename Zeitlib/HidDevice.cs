@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using ViscTronics.WinAPI;
@@ -20,9 +21,12 @@ namespace ViscTronics
 
     public class HidDevice
     {
+        private SetupAPI.SP_DEVINFO_DATA DevInfoData;
         public string DeviceId { get; private set; }
         public string DevicePath { get; private set; }
         //public bool FoundDevice { get { return DevicePath != null; } }
+
+        public string DeviceDescription { get; private set; }
 
         private Guid InterfaceClassGuid = new Guid("4d1e55b2-f16f-11cf-88cb-001111000030"); 
 
@@ -82,28 +86,17 @@ namespace ViscTronics
                         throw new Win32Exception(Marshal.GetLastWin32Error());
                     }
 
-                    //First query for the size of the hardware ID, so we can know how big a buffer to allocate for the data.
-                    //SetupDiGetDeviceRegistryPropertyUM(DeviceInfoTable, &DevInfoData, SPDRP_HARDWAREID, &dwRegType, NULL, 0, &dwRegSize);
-                    SetupAPI.SetupDiGetDeviceRegistryProperty(
-                        pDeviceInfoTable,
-                        ref deviceInfoData,
-                        SetupAPI.SPDRP_HARDWAREID,
-                        out dwRegType, null, 0, out dwRegSize);
-
-                    //Allocate a buffer for the hardware ID.
-                    byte[] propertyValueBuffer = new byte[dwRegSize];
-
                     //Retrieve the hardware IDs for the current device we are looking at.  PropertyValueBuffer gets filled with a 
                     //REG_MULTI_SZ (array of null terminated strings).  To find a device, we only care about the very first string in the
                     //buffer, which will be the "device ID".  The device ID is a string which contains the VID and PID, in the example 
                     //format "Vid_04d8&Pid_003f".
-                    if (!SetupAPI.SetupDiGetDeviceRegistryProperty(pDeviceInfoTable, ref deviceInfoData, SetupAPI.SPDRP_HARDWAREID, out dwRegType, propertyValueBuffer, dwRegSize, out dwRegSize)) 
+                    String deviceIdFromRegistry = SetupAPI.SetupDiGetDeviceRegistryProperty(pDeviceInfoTable, ref deviceInfoData, SetupAPI.SPDRP_HARDWAREID);
+                    if (deviceIdFromRegistry == null)
                     {
                         throw new Win32Exception(Marshal.GetLastWin32Error());
                     }
 
 				    //Now check if the first string in the hardware ID matches the device ID of my USB device.
-                    String deviceIdFromRegistry = System.Text.Encoding.Unicode.GetString(propertyValueBuffer);
 
 				    //Convert both strings to lower case.  This makes the code more robust/portable across OS Versions
                     deviceIdFromRegistry = deviceIdFromRegistry.ToLowerInvariant();
@@ -132,6 +125,11 @@ namespace ViscTronics
 
                         // Finally set the devicePath
                         this.DevicePath = deviceInterfaceDetailData.DevicePath;
+
+                        // Also get the device description
+                        this.DeviceDescription = SetupAPI.SetupDiGetDeviceRegistryProperty(pDeviceInfoTable, ref deviceInfoData, SetupAPI.SPDRP_FRIENDLYNAME);
+                        if (this.DeviceDescription == null)
+                            this.DeviceDescription = SetupAPI.SetupDiGetDeviceRegistryProperty(pDeviceInfoTable, ref deviceInfoData, SetupAPI.SPDRP_DEVICEDESC);
                         return;
 				    }
 
@@ -186,6 +184,83 @@ namespace ViscTronics
                 WinApiFile.DesiredAccess.GENERIC_READ | WinApiFile.DesiredAccess.GENERIC_WRITE,
                 WinApiFile.ShareMode.FILE_SHARE_READ | WinApiFile.ShareMode.FILE_SHARE_WRITE,
                 WinApiFile.CreationDisposition.OPEN_EXISTING);
+        }
+
+        /// <summary>
+        /// Modifies the device registry entry to use the specified name
+        /// in the windows device manager.
+        /// REQUIRES ADMINISTRATOR PRIVILEGE
+        /// </summary>
+        /// <param name="name">The name to display in the windows device manager</param>
+        public void SetFriendlyName(string name)
+        {
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
+                throw new Exception("This function requires administrator privileges");
+
+            var deviceInterfaceData = new SetupAPI.SP_DEVICE_INTERFACE_DATA();
+            var deviceInfoData = new SetupAPI.SP_DEVINFO_DATA();
+
+            UInt32 interfaceIndex = 0;
+
+            // Populate a list of plugged in devices (by specifying "DIGCF_PRESENT"), which are of the specified class GUID. 
+            IntPtr pDeviceInfoTable = SetupAPI.SetupDiGetClassDevs(
+                ref InterfaceClassGuid,
+                null,
+                IntPtr.Zero,
+                SetupAPI.DIGCF_PRESENT | SetupAPI.DIGCF_DEVICEINTERFACE
+            );
+            try
+            {
+                while (true)
+                {
+                    deviceInterfaceData.cbSize = (UInt32)Marshal.SizeOf(typeof(SetupAPI.SP_DEVICE_INTERFACE_DATA));
+
+                    if (!SetupAPI.SetupDiEnumDeviceInterfaces(pDeviceInfoTable, IntPtr.Zero, ref InterfaceClassGuid, interfaceIndex, ref deviceInterfaceData))
+                    {
+                        int error = Marshal.GetLastWin32Error();
+                        if (error == SetupAPI.ERROR_NO_MORE_ITEMS)
+                            return;
+                        else
+                            throw new Win32Exception(error);
+                    }
+
+                    //Initialize an appropriate SP_DEVINFO_DATA structure.  We need this structure for SetupDiGetDeviceRegistryProperty().
+                    deviceInfoData.cbSize = (UInt32)Marshal.SizeOf(typeof(SetupAPI.SP_DEVINFO_DATA));
+                    if (!SetupAPI.SetupDiEnumDeviceInfo(pDeviceInfoTable, interfaceIndex, ref deviceInfoData))
+                        throw new Win32Exception(Marshal.GetLastWin32Error());
+
+                    String deviceIdFromRegistry = SetupAPI.SetupDiGetDeviceRegistryProperty(pDeviceInfoTable, ref deviceInfoData, SetupAPI.SPDRP_HARDWAREID);
+                    if (deviceIdFromRegistry != null)
+                    {
+                        deviceIdFromRegistry = deviceIdFromRegistry.ToLowerInvariant(); ;
+                        String deviceIdToFind = this.DeviceId.ToLowerInvariant();
+
+                        if (deviceIdFromRegistry.Contains(deviceIdToFind))
+                        {
+                            // Set the friendly name that's displayed in the device manager
+                            SetupAPI.SetupDiSetDeviceRegistryProperty(pDeviceInfoTable, ref deviceInfoData, SetupAPI.SPDRP_FRIENDLYNAME, name);
+
+                            this.DeviceDescription = SetupAPI.SetupDiGetDeviceRegistryProperty(pDeviceInfoTable, ref deviceInfoData, SetupAPI.SPDRP_FRIENDLYNAME);
+                            if (this.DeviceDescription == null)
+                                this.DeviceDescription = SetupAPI.SetupDiGetDeviceRegistryProperty(pDeviceInfoTable, ref deviceInfoData, SetupAPI.SPDRP_DEVICEDESC);
+                        }
+
+                    }
+
+
+                    interfaceIndex++;
+                    if (interfaceIndex == 10000000)	//Surely there aren't more than 10 million interfaces attached to a single PC.
+                        return;
+                }
+
+            }
+            finally
+            {
+                //Clean up the old structure we no longer need.
+                SetupAPI.SetupDiDestroyDeviceInfoList(pDeviceInfoTable);
+            }
         }
     }
 }
