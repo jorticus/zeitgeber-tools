@@ -191,8 +191,8 @@ namespace ViscTronics.Zeitlib
             }
             catch (HidDeviceException e)
             {
-                throw new ZeitgeberException("Could not connect to the device", e);
                 isConnected = false;
+                throw new ZeitgeberException("Could not connect to the device", e);
             }
 
             // The PIC must be pinged every few seconds for it to show the USB connection icon.
