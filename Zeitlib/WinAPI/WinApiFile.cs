@@ -9,6 +9,13 @@ using System.Threading;
 
 namespace ViscTronics.WinAPI
 {
+    public class WinApiFileException : Exception
+    {
+        public WinApiFileException() { }
+        public WinApiFileException(string message) : base(message) { }
+        public WinApiFileException(string message, Exception innerException) : base(message, innerException) { }
+    }
+
     // Modified version of this http://buiba.blogspot.co.nz/2009/06/using-winapi-createfile-readfile.html
     public class WinApiFile : IDisposable
     {
@@ -184,12 +191,22 @@ namespace ViscTronics.WinAPI
             }
 
             // Wait for the operation to complete
-            if (!GetOverlappedResultEx(_hFile, ref overlapped, out cbThatWereRead, timeout, false))
-                ThrowLastWin32Err();
+            int waitResult = WaitForSingleObject(_hFile, timeout);
+            if (waitResult != WAIT_OBJECT_0)
+            {
+                if (waitResult == WAIT_TIMEOUT)
+                {
+                    throw new WinApiFileException("Timeout while waiting for device");
+                }
+                else
+                {
+                    CancelIo(_hFile);
+                    ThrowLastWin32Err();
+                }
+            }
             
             return cbThatWereRead;
         }
-        //TODO: ReadNonBlocking
 
         public uint Write(byte[] buffer, uint cbToWrite, int timeout = DEFAULT_TIMEOUT)
         {
@@ -203,8 +220,17 @@ namespace ViscTronics.WinAPI
             }
 
             // Wait for the operation to complete
-            if (!GetOverlappedResultEx(_hFile, ref overlapped, out cbThatWereWritten, timeout, false))
-                ThrowLastWin32Err();
+            int waitResult = WaitForSingleObject(_hFile, timeout);
+            if (waitResult != WAIT_OBJECT_0)
+            {
+                if (waitResult == WAIT_TIMEOUT)
+                {
+                    throw new WinApiFileException("Timeout while waiting for device");
+                } else {
+                    CancelIo(_hFile);
+                    ThrowLastWin32Err();
+                }
+            }
 
             return cbThatWereWritten;
         }
@@ -414,11 +440,6 @@ namespace ViscTronics.WinAPI
         static extern bool GetOverlappedResult(SafeFileHandle hFile,
            [In] ref OVERLAPPED lpOverlapped,
            out uint lpNumberOfBytesTransferred, bool bWait);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern bool GetOverlappedResultEx(SafeFileHandle hFile,
-           [In] ref OVERLAPPED lpOverlapped,
-           out uint lpNumberOfBytesTransferred, Int32 dwMilliseconds, bool bAlertable);
 
         [DllImport("kernel32.dll")]
         //[return: MarshalAs(UnmanagedType.Bool)]
