@@ -8,12 +8,18 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "zeitctrl", "zeitctrl\zeitctrl.csproj", "{58FFDA4A-D7D4-4777-8629-305B3A5EA7C8}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2DAD768D-9509-4857-B696-8A34D2137112} = {2DAD768D-9509-4857-B696-8A34D2137112}
+		{622556E2-81DA-4FB3-A9E1-8FC6A7198C69} = {622556E2-81DA-4FB3-A9E1-8FC6A7198C69}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeitgeberGUI", "ZeitgeberGUI\ZeitgeberGUI.csproj", "{34D5B1B7-BCB6-4459-AD0C-9790CD9298D8}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2DAD768D-9509-4857-B696-8A34D2137112} = {2DAD768D-9509-4857-B696-8A34D2137112}
+		{622556E2-81DA-4FB3-A9E1-8FC6A7198C69} = {622556E2-81DA-4FB3-A9E1-8FC6A7198C69}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calendar", "Calendar\Calendar.csproj", "{622556E2-81DA-4FB3-A9E1-8FC6A7198C69}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "installdeviceinfo", "installdeviceinfo\installdeviceinfo.csproj", "{89B56C9F-0613-412C-AED7-9A61D968F032}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +39,14 @@ Global
 		{34D5B1B7-BCB6-4459-AD0C-9790CD9298D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34D5B1B7-BCB6-4459-AD0C-9790CD9298D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34D5B1B7-BCB6-4459-AD0C-9790CD9298D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{622556E2-81DA-4FB3-A9E1-8FC6A7198C69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{622556E2-81DA-4FB3-A9E1-8FC6A7198C69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{622556E2-81DA-4FB3-A9E1-8FC6A7198C69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{622556E2-81DA-4FB3-A9E1-8FC6A7198C69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89B56C9F-0613-412C-AED7-9A61D968F032}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89B56C9F-0613-412C-AED7-9A61D968F032}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89B56C9F-0613-412C-AED7-9A61D968F032}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89B56C9F-0613-412C-AED7-9A61D968F032}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
