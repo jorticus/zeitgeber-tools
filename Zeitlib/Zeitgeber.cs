@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -46,9 +48,10 @@ namespace ViscTronics.Zeitlib
         // Display interface
         private const byte CMD_QUERY_DISPLAY = 0x20;
         private const byte CMD_SET_DISPLAY_POWER = 0x21;
-        private const byte CMD_DISPLAY_OVERRIDE = 0x22;
-        private const byte CMD_UPDATE_DISPLAY_BUF = 0x23;
-        private const byte CMD_READ_DISPLAY_BUF = 0x24;
+        private const byte CMD_DISPLAY_LOCK = 0x22;
+        private const byte CMD_DISPLAY_UNLOCK = 0x23;
+        private const byte CMD_DISPLAY_WRITEBUF = 0x24;
+        private const byte CMD_DISPLAY_READBUF = 0x25;
 
         // Sensors
         private const byte CMD_QUERY_SENSORS = 0x25;
@@ -123,6 +126,20 @@ namespace ViscTronics.Zeitlib
             public UInt16 BitsPerPixel;
 
             public UInt16 DisplayOn;
+        }
+
+        private const int DISPLAY_CHUNK_SIZE = 32;
+        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = COMMAND_PACKET_SIZE)]
+        public struct DisplayChunk
+        {
+            public byte WindowsReserved;
+            public byte Command;
+
+            public byte State;
+            public UInt16 Offset;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = DISPLAY_CHUNK_SIZE)]
+            public byte[] Buf;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1, Size = COMMAND_PACKET_SIZE)]
@@ -469,6 +486,72 @@ namespace ViscTronics.Zeitlib
             // Capture whatever is currently in the screen buffer
             throw new NotImplementedException();
         }*/
+
+        private void DisplayLock()
+        {
+            SendCommandPacket(new CommandStruct { Command = CMD_DISPLAY_LOCK });
+        }
+        private void DisplayUnlock()
+        {
+            SendCommandPacket(new CommandStruct { Command = CMD_DISPLAY_UNLOCK });
+        }
+
+        private byte[] ReadDisplayChunk(UInt16 offset)
+        {
+            var chunk = (DisplayChunk)SendCommandPacket(
+                new DisplayChunk { 
+                    Command = CMD_DISPLAY_READBUF,
+                    Offset = offset
+                }, 
+                typeof(DisplayChunk));
+
+            return (chunk.State > 0) ? chunk.Buf : null;
+        }
+
+        public Image CaptureScreenImage()
+        {
+            DisplayQuery query = QueryDisplay();
+
+            int stride = query.Width * query.BitsPerPixel / 8;
+            int total_size = query.Width * query.Height * query.BitsPerPixel / 8;
+            int chunks = total_size / DISPLAY_CHUNK_SIZE; // 32 bytes per chunk
+            UInt16 offset = 0;
+
+            // Lock the display
+            DisplayLock();
+
+            // Wait for the frame to be ready
+            byte[] chunk;
+            do
+                chunk = ReadDisplayChunk(offset);
+            while (chunk == null);
+
+            // Read the complete frame buffer
+            byte[] image_buffer = new byte[total_size];
+            for (int i = 0; i < chunks; i++)
+            {
+                if (i > 0)
+                    chunk = ReadDisplayChunk(offset);
+
+                for (int j = 0; j < DISPLAY_CHUNK_SIZE; j++)
+                    image_buffer[offset++] = chunk[j];
+            }
+
+            // Unlock the display
+            DisplayUnlock();
+
+            GCHandle image_handle = GCHandle.Alloc(image_buffer, GCHandleType.Pinned);
+            try
+            {
+                Image img = new Bitmap(query.Width, query.Height, stride, System.Drawing.Imaging.PixelFormat.Format16bppRgb565, image_handle.AddrOfPinnedObject());
+                return img;
+            }
+            finally
+            {
+                image_handle.Free();
+            }
+        }
+
         #endregion
 
         #region Sensors

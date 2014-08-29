@@ -29,29 +29,29 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewGroup listViewGroup15 = new System.Windows.Forms.ListViewGroup("CPU", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup16 = new System.Windows.Forms.ListViewGroup("Hardware", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup17 = new System.Windows.Forms.ListViewGroup("Scheduler", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup18 = new System.Windows.Forms.ListViewGroup("Misc", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup19 = new System.Windows.Forms.ListViewGroup("Display", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup20 = new System.Windows.Forms.ListViewGroup("Battery", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup21 = new System.Windows.Forms.ListViewGroup("RTC", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("CPU", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Hardware", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Scheduler", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Misc", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup5 = new System.Windows.Forms.ListViewGroup("Display", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup6 = new System.Windows.Forms.ListViewGroup("Battery", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup7 = new System.Windows.Forms.ListViewGroup("RTC", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
             "Level",
             "-"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem(new string[] {
             "Voltage",
             "-"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem(new string[] {
             "Status",
             "-"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem(new string[] {
             "systick",
             "-"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem(new string[] {
             "Time",
             "-"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem18 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem(new string[] {
             "Date",
             "-"}, -1);
             this.lblConnected = new System.Windows.Forms.Label();
@@ -66,11 +66,18 @@
             this.columnHeaderValue = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.timerUpdate = new System.Windows.Forms.Timer(this.components);
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.btnScreenshot = new System.Windows.Forms.Button();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.imgDisplay = new System.Windows.Forms.PictureBox();
             this.txtConsole = new ViscTronics.ZeitgeberGUI.ConsoleTextBox();
+            this.btnSaveScreenshot = new System.Windows.Forms.Button();
+            this.saveImageDialog = new System.Windows.Forms.SaveFileDialog();
             this.groupBox1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.imgDisplay)).BeginInit();
             this.SuspendLayout();
             // 
             // lblConnected
@@ -94,7 +101,6 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.flowLayoutPanel1);
             this.groupBox1.Location = new System.Drawing.Point(263, 28);
             this.groupBox1.Name = "groupBox1";
@@ -109,6 +115,7 @@
             this.flowLayoutPanel1.Controls.Add(this.button1);
             this.flowLayoutPanel1.Controls.Add(this.button2);
             this.flowLayoutPanel1.Controls.Add(this.button3);
+            this.flowLayoutPanel1.Controls.Add(this.btnScreenshot);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 16);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
@@ -138,8 +145,6 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.listViewInfo);
             this.groupBox2.Location = new System.Drawing.Point(12, 28);
             this.groupBox2.Name = "groupBox2";
@@ -157,41 +162,41 @@
             this.columnHeaderProperty,
             this.columnHeaderValue});
             this.listViewInfo.FullRowSelect = true;
-            listViewGroup15.Header = "CPU";
-            listViewGroup15.Name = "listViewGroupCPU";
-            listViewGroup16.Header = "Hardware";
-            listViewGroup16.Name = "listViewGroupHardware";
-            listViewGroup17.Header = "Scheduler";
-            listViewGroup17.Name = "listViewGroupScheduler";
-            listViewGroup18.Header = "Misc";
-            listViewGroup18.Name = "listViewGroupMisc";
-            listViewGroup19.Header = "Display";
-            listViewGroup19.Name = "listViewGroupDisplay";
-            listViewGroup20.Header = "Battery";
-            listViewGroup20.Name = "listViewGroupBattery";
-            listViewGroup21.Header = "RTC";
-            listViewGroup21.Name = "listViewGroupRTC";
+            listViewGroup1.Header = "CPU";
+            listViewGroup1.Name = "listViewGroupCPU";
+            listViewGroup2.Header = "Hardware";
+            listViewGroup2.Name = "listViewGroupHardware";
+            listViewGroup3.Header = "Scheduler";
+            listViewGroup3.Name = "listViewGroupScheduler";
+            listViewGroup4.Header = "Misc";
+            listViewGroup4.Name = "listViewGroupMisc";
+            listViewGroup5.Header = "Display";
+            listViewGroup5.Name = "listViewGroupDisplay";
+            listViewGroup6.Header = "Battery";
+            listViewGroup6.Name = "listViewGroupBattery";
+            listViewGroup7.Header = "RTC";
+            listViewGroup7.Name = "listViewGroupRTC";
             this.listViewInfo.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup15,
-            listViewGroup16,
-            listViewGroup17,
-            listViewGroup18,
-            listViewGroup19,
-            listViewGroup20,
-            listViewGroup21});
-            listViewItem13.Group = listViewGroup20;
-            listViewItem14.Group = listViewGroup20;
-            listViewItem15.Group = listViewGroup20;
-            listViewItem16.Group = listViewGroup15;
-            listViewItem17.Group = listViewGroup21;
-            listViewItem18.Group = listViewGroup21;
+            listViewGroup1,
+            listViewGroup2,
+            listViewGroup3,
+            listViewGroup4,
+            listViewGroup5,
+            listViewGroup6,
+            listViewGroup7});
+            listViewItem1.Group = listViewGroup6;
+            listViewItem2.Group = listViewGroup6;
+            listViewItem3.Group = listViewGroup6;
+            listViewItem4.Group = listViewGroup1;
+            listViewItem5.Group = listViewGroup7;
+            listViewItem6.Group = listViewGroup7;
             this.listViewInfo.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem13,
-            listViewItem14,
-            listViewItem15,
-            listViewItem16,
-            listViewItem17,
-            listViewItem18});
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4,
+            listViewItem5,
+            listViewItem6});
             this.listViewInfo.Location = new System.Drawing.Point(9, 19);
             this.listViewInfo.Name = "listViewInfo";
             this.listViewInfo.Size = new System.Drawing.Size(230, 216);
@@ -224,10 +229,40 @@
             this.groupBox3.Controls.Add(this.txtConsole);
             this.groupBox3.Location = new System.Drawing.Point(12, 275);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(345, 165);
+            this.groupBox3.Size = new System.Drawing.Size(490, 165);
             this.groupBox3.TabIndex = 8;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Console";
+            // 
+            // btnScreenshot
+            // 
+            this.btnScreenshot.Location = new System.Drawing.Point(3, 90);
+            this.btnScreenshot.Name = "btnScreenshot";
+            this.btnScreenshot.Size = new System.Drawing.Size(75, 23);
+            this.btnScreenshot.TabIndex = 4;
+            this.btnScreenshot.Text = "Screenshot";
+            this.btnScreenshot.UseVisualStyleBackColor = true;
+            this.btnScreenshot.Click += new System.EventHandler(this.btnScreenshot_Click);
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.btnSaveScreenshot);
+            this.groupBox4.Controls.Add(this.imgDisplay);
+            this.groupBox4.Location = new System.Drawing.Point(363, 28);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(139, 241);
+            this.groupBox4.TabIndex = 9;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Display";
+            // 
+            // imgDisplay
+            // 
+            this.imgDisplay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.imgDisplay.Location = new System.Drawing.Point(6, 19);
+            this.imgDisplay.Name = "imgDisplay";
+            this.imgDisplay.Size = new System.Drawing.Size(128, 128);
+            this.imgDisplay.TabIndex = 0;
+            this.imgDisplay.TabStop = false;
             // 
             // txtConsole
             // 
@@ -241,15 +276,30 @@
             this.txtConsole.Name = "txtConsole";
             this.txtConsole.ReadOnly = true;
             this.txtConsole.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtConsole.Size = new System.Drawing.Size(330, 140);
+            this.txtConsole.Size = new System.Drawing.Size(475, 140);
             this.txtConsole.TabIndex = 0;
-            this.txtConsole.Text = "Heh Yer";
+            // 
+            // btnSaveScreenshot
+            // 
+            this.btnSaveScreenshot.Location = new System.Drawing.Point(6, 153);
+            this.btnSaveScreenshot.Name = "btnSaveScreenshot";
+            this.btnSaveScreenshot.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveScreenshot.TabIndex = 1;
+            this.btnSaveScreenshot.Text = "Save";
+            this.btnSaveScreenshot.UseVisualStyleBackColor = true;
+            this.btnSaveScreenshot.Click += new System.EventHandler(this.btnSaveScreenshot_Click);
+            // 
+            // saveImageDialog
+            // 
+            this.saveImageDialog.DefaultExt = "png";
+            this.saveImageDialog.FileName = "screenshot.png";
             // 
             // DebugForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(369, 452);
+            this.ClientSize = new System.Drawing.Size(514, 452);
+            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.lblConnected);
             this.Controls.Add(this.groupBox1);
@@ -265,6 +315,8 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.imgDisplay)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -285,6 +337,11 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.GroupBox groupBox3;
         private ViscTronics.ZeitgeberGUI.ConsoleTextBox txtConsole;
+        private System.Windows.Forms.Button btnScreenshot;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.PictureBox imgDisplay;
+        private System.Windows.Forms.Button btnSaveScreenshot;
+        private System.Windows.Forms.SaveFileDialog saveImageDialog;
     }
 }
 

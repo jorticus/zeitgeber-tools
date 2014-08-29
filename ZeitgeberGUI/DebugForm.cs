@@ -160,5 +160,28 @@ namespace ViscTronics.ZeitgeberGUI
         {
             
         }
+
+        /// <summary>
+        /// Capture a screenshot
+        /// </summary>
+        private async void btnScreenshot_Click(object sender, EventArgs e)
+        {
+            btnScreenshot.Enabled = false;
+            timerUpdate.Enabled = false;
+            imgDisplay.Image = await Task.Run(() => zeitgeber.CaptureScreenImage());
+            btnScreenshot.Enabled = true;
+            timerUpdate.Enabled = true;
+        }
+
+        /// <summary>
+        /// Save the captured screenshot to a file
+        /// </summary>
+        private void btnSaveScreenshot_Click(object sender, EventArgs e)
+        {
+            if (saveImageDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                imgDisplay.Image.Save(saveImageDialog.FileName);
+            }
+        }
     }
 }
