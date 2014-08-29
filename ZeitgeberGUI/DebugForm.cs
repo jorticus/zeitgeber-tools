@@ -136,12 +136,16 @@ namespace ViscTronics.ZeitgeberGUI
                     rtcGroup.Items[1].SubItems[1].Text = dt.Value.ToShortDateString();
                 }
 
-                string msg = zeitgeber.GetNextDebugMessage();
-                if (msg != null)
+                string msg;
+                do
                 {
-                    msg = msg.Replace("\n", Environment.NewLine);
-                    txtConsole.AppendText(msg);
-                }
+                    msg = zeitgeber.GetNextDebugMessage();
+                    if (msg != null)
+                    {
+                        msg = msg.Replace("\n", Environment.NewLine);
+                        txtConsole.AppendText(msg);
+                    }
+                } while (msg != null);
 
             }
             finally
