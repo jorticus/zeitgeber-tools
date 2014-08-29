@@ -16,7 +16,9 @@ namespace ViscTronics.ZeitgeberGUI
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            Application.Run(new DebugForm());
+            //Application.Run(new CalendarForm());
+            //Application.Run(new UCTimetableLogin());
         }
     }
 }

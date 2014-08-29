@@ -11,12 +11,14 @@ using ViscTronics.Zeitlib;
 
 namespace ViscTronics.ZeitgeberGUI
 {
-    public partial class MainForm : Form
+    public partial class DebugForm : Form
     {
+        public CalendarForm CalendarForm = new CalendarForm();
+
         public Zeitgeber zeitgeber = new Zeitgeber();
         public bool isConnected = false;
 
-        public MainForm()
+        public DebugForm()
         {
             InitializeComponent();
         }
@@ -29,6 +31,7 @@ namespace ViscTronics.ZeitgeberGUI
         private void MainForm_Load(object sender, EventArgs e)
         {
             //timerUpdate_Tick(null, null);
+            //CalendarForm.Show();
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
@@ -46,8 +49,9 @@ namespace ViscTronics.ZeitgeberGUI
                     zeitgeber.Ping();
                     UpdateDiagnostics();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    zeitgeber.isConnected = false;
                     lblConnected.Text = "Not Connected";
                     listViewInfo.Enabled = false;
                     groupBox1.Enabled = false;
@@ -60,16 +64,20 @@ namespace ViscTronics.ZeitgeberGUI
                     zeitgeber.Connect();
                     
                     zeitgeber.Ping();
-                    UpdateDiagnostics();
+
+                    OnDeviceConnect();
 
                     lblConnected.Text = "Connected";
                     listViewInfo.Enabled = true;
                     groupBox1.Enabled = true;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    zeitgeber.isConnected = false;
                     // Couldn't connect
                 }
+
+                
             }
         }
 
@@ -93,28 +101,60 @@ namespace ViscTronics.ZeitgeberGUI
             zeitgeber.Reset();
         }
 
+        /// <summary>
+        /// Called when a device connects
+        /// </summary>
+        private void OnDeviceConnect()
+        {
+            txtConsole.Clear();
+        }
+
+        /// <summary>
+        /// Called by the update timer when the device is connected
+        /// </summary>
         private void UpdateDiagnostics()
         {
             listViewInfo.BeginUpdate();
+            try
+            {
 
-            var cpuInfo = zeitgeber.GetCpuInfo();
-            var cpuGroup = listViewInfo.Groups["listViewGroupCPU"];
-            cpuGroup.Items[0].SubItems[1].Text = cpuInfo.systick.ToString();
+                var cpuInfo = zeitgeber.GetCpuInfo();
+                var cpuGroup = listViewInfo.Groups["listViewGroupCPU"];
+                cpuGroup.Items[0].SubItems[1].Text = cpuInfo.systick.ToString();
 
-            var batteryInfo = zeitgeber.GetBatteryInfo();
-            var batteryGroup = listViewInfo.Groups["listViewGroupBattery"];
-            batteryGroup.Items[0].SubItems[1].Text = batteryInfo.Level.ToString() + "%";
-            batteryGroup.Items[1].SubItems[1].Text = batteryInfo.Voltage.ToString() + "mV";
-            batteryGroup.Items[2].SubItems[1].Text = ((Zeitlib.PowerStatus)batteryInfo.PowerStatus).ToString();
+                var batteryInfo = zeitgeber.GetBatteryInfo();
+                var batteryGroup = listViewInfo.Groups["listViewGroupBattery"];
+                batteryGroup.Items[0].SubItems[1].Text = batteryInfo.Level.ToString() + "%";
+                batteryGroup.Items[1].SubItems[1].Text = batteryInfo.Voltage.ToString() + "mV";
+                batteryGroup.Items[2].SubItems[1].Text = ((Zeitlib.PowerStatus)batteryInfo.PowerStatus).ToString();
 
-            var dt = zeitgeber.GetDateTime();
-            var rtcGroup = listViewInfo.Groups["listViewGroupRTC"];
-            rtcGroup.Items[0].SubItems[1].Text = dt.ToLongTimeString();
-            rtcGroup.Items[1].SubItems[1].Text = dt.ToShortDateString();
+                DateTime? dt = zeitgeber.GetDateTime();
+                if (dt.HasValue)
+                {
+                    var rtcGroup = listViewInfo.Groups["listViewGroupRTC"];
+                    rtcGroup.Items[0].SubItems[1].Text = dt.Value.ToLongTimeString();
+                    rtcGroup.Items[1].SubItems[1].Text = dt.Value.ToShortDateString();
+                }
 
-            listViewInfo.EndUpdate();
+                string msg = zeitgeber.GetNextDebugMessage();
+                if (msg != null)
+                {
+                    msg = msg.Replace("\n", Environment.NewLine);
+                    txtConsole.AppendText(msg);
+                }
+
+            }
+            finally
+            {
+                listViewInfo.EndUpdate();
+            }
 
            // itm.SetValue("Test");
+        }
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+            
         }
     }
 }
