@@ -41,6 +41,7 @@ namespace ViscTronics.Zeitlib
         // Diagnostics
         private const byte CMD_GET_BATTERY_INFO = 0x10;
         private const byte CMD_GET_CPU_INFO = 0x11;
+        private const byte CMD_GET_NEXT_MESSAGE = 0x12;
 
         // Display interface
         private const byte CMD_QUERY_DISPLAY = 0x20;
@@ -152,6 +153,19 @@ namespace ViscTronics.Zeitlib
             public byte Day;
             public byte Month;
             public byte Year;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = COMMAND_PACKET_SIZE)]
+        public struct DebugMessageQuery
+        {
+            public byte WindowsReserved;
+            public byte Command;
+            public byte Padding;
+
+            public UInt16 Len;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 60)]
+            public char[] Message;
         }
 
         #endregion
@@ -328,16 +342,26 @@ namespace ViscTronics.Zeitlib
 
         #region Time & Date
 
-        public DateTime GetDateTime()
+        /// <summary>
+        /// Returns the current DateTime of the watch, or null if not currently valid.
+        /// </summary>
+        public DateTime? GetDateTime()
         {
             var packet = (DateTimePacket)SendCommandPacket(new CommandStruct { Command = CMD_GET_DATETIME }, typeof(DateTimePacket));
-            return new DateTime(packet.Year + 2000, packet.Month, packet.Day, packet.Hour, packet.Minute, packet.Second);
+            try
+            {
+                return new DateTime(packet.Year + 2000, packet.Month, packet.Day, packet.Hour, packet.Minute, packet.Second);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return null;
+            }
         }
 
         public void SetDateTime(DateTime dt)
         {
             if (dt.Year < 2000)
-                throw new Exception("Datetime year cannot be less than 2000");
+                throw new ArgumentException("Datetime year cannot be less than 2000");
 
             DateTimePacket packet = new DateTimePacket();
             packet.Command = CMD_SET_DATETIME;
@@ -408,6 +432,20 @@ namespace ViscTronics.Zeitlib
             return (DisplayQuery)SendCommandPacket(new CommandStruct { Command = CMD_QUERY_DISPLAY }, typeof(DisplayQuery));
         }
 
+        /// <summary>
+        /// Returns the latest debug message, or null if no debug messages available
+        /// </summary>
+        public string GetNextDebugMessage()
+        {
+            var query = (DebugMessageQuery)SendCommandPacket(new CommandStruct { Command = CMD_GET_NEXT_MESSAGE }, typeof(DebugMessageQuery));
+            if (query.Len > 0)
+            {
+                return new String(query.Message.Take(query.Len).ToArray());
+            }
+            return null; // No more messages in the buffer
+        }
+
+
         /*public void DisableScreenUpdates()
         {
             throw new NotImplementedException();
@@ -441,5 +479,6 @@ namespace ViscTronics.Zeitlib
         }
 
         #endregion
+
     }
 }

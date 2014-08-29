@@ -218,10 +218,20 @@ namespace ViscTronics.ZeitCtrl
             if (args.verbose)
                 Console.WriteLine("Syncing watch time to PC...");
 
-            var old_dt = zeitgeber.GetDateTime();
-            var new_dt = DateTime.Now;
+            DateTime new_dt = DateTime.Now;
+            DateTime old_dt = DateTime.Now;
 
-            zeitgeber.SetDateTime(new_dt);
+            DateTime? curr_dt = zeitgeber.GetDateTime();
+            if (curr_dt.HasValue)
+                old_dt = curr_dt.Value;
+            else
+            {
+                if (args.verbose)
+                    Console.WriteLine("DateTime not yet set");
+            }
+
+            zeitgeber.SetDateTime(new_dt - new TimeSpan(1, 0, 0, 0));
+
             
             TimeSpan diff = new_dt - old_dt;
             int seconds = (int)Math.Round(diff.TotalSeconds);
