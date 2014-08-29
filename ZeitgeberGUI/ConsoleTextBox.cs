@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -16,6 +17,13 @@ namespace ViscTronics.ZeitgeberGUI
     /// </summary>
     class ConsoleTextBox : TextBox
     {
+
+        // set tab stops to a width of 4
+        private const int EM_SETTABSTOPS = 0x00CB;
+
+        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr SendMessage(IntPtr h, int msg, int wParam, int[] lParam);
+
         private const int SB_VERT = 0x1;
         private const int WM_VSCROLL = 0x115;
         private const int SB_THUMBPOSITION = 0x4;
@@ -29,7 +37,15 @@ namespace ViscTronics.ZeitgeberGUI
 
         public ConsoleTextBox() : base()
         {
+            this.Invalidate();
             this.KeyDown += ConsoleTextBox_KeyDown;
+            this.Invalidated += ConsoleTextBox_Invalidated;
+        }
+
+        void ConsoleTextBox_Invalidated(object sender, InvalidateEventArgs e)
+        {
+            // Set tab width to 4 chars
+            SendMessage(this.Handle, EM_SETTABSTOPS, 1, new int[] { 4 * 4 });
         }
 
         void ConsoleTextBox_KeyDown(object sender, KeyEventArgs e)
