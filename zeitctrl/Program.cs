@@ -230,7 +230,7 @@ namespace ViscTronics.ZeitCtrl
                     Console.WriteLine("DateTime not yet set");
             }
 
-            zeitgeber.SetDateTime(new_dt - new TimeSpan(1, 0, 0, 0));
+            zeitgeber.SetDateTime(new_dt);
 
             
             TimeSpan diff = new_dt - old_dt;
