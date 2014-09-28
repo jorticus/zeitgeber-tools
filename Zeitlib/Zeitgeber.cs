@@ -386,7 +386,10 @@ namespace ViscTronics.Zeitlib
             packet.Year = (byte)(dt.Year-2000);
             packet.Month = (byte)dt.Month;
             packet.Day = (byte)dt.Day;
-            packet.DayOfWeek = (byte)dt.DayOfWeek; // 0:Sunday, 1:Monday, ...
+
+            int dow = (int)dt.DayOfWeek - 1;
+            if (dow < 0) dow += 7;
+            packet.DayOfWeek = (byte)(dow); // 0:Monday, 1:Tuesday, ...
 
             packet.Hour = (byte)dt.Hour;
             packet.Minute = (byte)dt.Minute;
