@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 using NDesk.Options;
 using ViscTronics.Zeitlib;
 
@@ -14,7 +15,7 @@ namespace ViscTronics.ZeitCtrl
         private static OptionSet opts;
         private static Zeitgeber zeitgeber;
 
-        public enum CommandLineAction { Unspecified, Ping, Reset, Query, SyncTime };
+        public enum CommandLineAction { Unspecified, Ping, Reset, Query, SyncTime, Screenshot };
 
         struct Args
         {
@@ -85,6 +86,11 @@ namespace ViscTronics.ZeitCtrl
                         SyncTime();
                         break;
 
+                    case CommandLineAction.Screenshot:
+                        string filename = (subargs.Count >= 2) ? subargs[1] : "screenshot.png";
+                        Screenshot(filename);
+                        break;
+
                     default:
                         throw new NotImplementedException("The action is not yet implemented");
 
@@ -131,6 +137,7 @@ namespace ViscTronics.ZeitCtrl
             Console.WriteLine("        reset                Resets the device (into bootloader mode)");
             Console.WriteLine("        query                Query the watch for information");
             Console.WriteLine("        synctime             Update the watch's time and date to the computer's time");
+            Console.WriteLine("        screenshot [filename] Capture a screenshot to file");
         }
 
         /// <summary>
@@ -161,14 +168,8 @@ namespace ViscTronics.ZeitCtrl
 
         private static void QueryDevice()
         {
-            // Simple program for resetting the device
-            /*
-
-            //zeitgeber.InstallDriverInfo();
-            //return;
-
             // Other system tests
-            /*Console.WriteLine("Connecting...");
+            Console.WriteLine("Connecting...");
             zeitgeber.Connect();
 
             Console.Write("Connected to ");
@@ -207,7 +208,7 @@ namespace ViscTronics.ZeitCtrl
             Console.WriteLine(dt.ToString());
             Console.WriteLine("Actual:");
             Console.WriteLine(DateTime.Now.ToString());
-            Console.WriteLine();*/
+            Console.WriteLine();
         }
 
         /// <summary>
@@ -248,6 +249,21 @@ namespace ViscTronics.ZeitCtrl
                 if (args.verbose)
                     Console.WriteLine("Difference: {1}", new_dt.ToString(), ts.ToString());
             }
+        }
+
+        /// <summary>
+        /// Capture a screenshot and save to an image file
+        /// </summary>
+        /// <param name="filename"></param>
+        private static void Screenshot(string filename)
+        {
+            if (args.verbose)
+                Console.WriteLine("Capturing image...");
+
+            var image = zeitgeber.CaptureScreenImage();
+
+            image.Save(filename);
+            Console.WriteLine("Saved to {0}", filename);
         }
     }
 }

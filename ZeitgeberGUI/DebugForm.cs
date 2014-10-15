@@ -13,8 +13,6 @@ namespace ViscTronics.ZeitgeberGUI
 {
     public partial class DebugForm : Form
     {
-        public CalendarForm CalendarForm = new CalendarForm();
-
         public Zeitgeber zeitgeber = new Zeitgeber();
         public bool isConnected = false;
 
