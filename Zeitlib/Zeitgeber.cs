@@ -10,12 +10,52 @@ using ViscTronics;
 
 namespace ViscTronics.Zeitlib
 {
+    #region Exceptions
     public class ZeitgeberException : Exception
     {
         public ZeitgeberException() { }
         public ZeitgeberException(string message) : base(message) { }
         public ZeitgeberException(string message, Exception innerException) : base(message, innerException) { }
     }
+
+    public class ZeitgeberCommandException : Exception
+    {
+        // Error codes
+        public const byte ERR_OK = 0x00;
+        public const byte ERR_UNKNOWN = 0x01;
+        public const byte ERR_OUT_OF_RAM = 0x10;
+        public const byte ERR_NOT_IMPLEMENTED = 0x11;
+        public const byte ERR_INVALID_INDEX = 0x12;
+        public const byte ERR_INVALID_PARAM = 0x13;
+
+        protected static string GetErrorMessage(int code)
+        {
+            switch (code)
+            {
+                case ERR_OK:
+                    return "OK";
+                case ERR_OUT_OF_RAM:
+                    return "Out of RAM";
+                case ERR_NOT_IMPLEMENTED:
+                    return "Not implemented";
+                case ERR_INVALID_INDEX:
+                    return "Invalid index";
+                case ERR_INVALID_PARAM:
+                    return "Invalid parameter";
+                default:
+                    return String.Format("Unknown Error ({0})", code);
+            }
+        }
+        protected static string FormatErrorMessage(string message, int code)
+        {
+            return message + " (" + GetErrorMessage(code) + ")";
+        }
+
+        public ZeitgeberCommandException(int code = ERR_UNKNOWN) : base(FormatErrorMessage("Command Exception", code)) { }
+        public ZeitgeberCommandException(string message, int code = ERR_UNKNOWN) : base(FormatErrorMessage(message, code)) { }
+        public ZeitgeberCommandException(string message, Exception innerException, int code = ERR_UNKNOWN) : base(FormatErrorMessage(message, code), innerException) { }
+    }
+    #endregion
 
     #region Enums
 
@@ -283,6 +323,10 @@ namespace ViscTronics.Zeitlib
                 // Validate
                 if (command != bytes[1])
                     throw new ZeitgeberException("Received invalid response to command");
+
+                // Check if the device reported any errors
+                if (bytes[2] != ZeitgeberCommandException.ERR_OK)
+                    throw new ZeitgeberCommandException(bytes[2]);
 
                 // Convert bytes to structure
                 GCHandle rxhandle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
