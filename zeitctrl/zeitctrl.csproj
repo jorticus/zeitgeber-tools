@@ -59,9 +59,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="ViscTronics.Zeitlib">
-      <HintPath>..\Zeitlib\bin\Debug\ViscTronics.Zeitlib.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Options.cs" />
@@ -87,6 +84,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Zeitlib\Zeitlib.csproj">
+      <Project>{2dad768d-9509-4857-b696-8a34d2137112}</Project>
+      <Name>Zeitlib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

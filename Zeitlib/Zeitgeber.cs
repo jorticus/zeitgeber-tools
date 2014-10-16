@@ -102,6 +102,10 @@ namespace ViscTronics.Zeitlib
         private const byte CMD_GET_DATETIME = 0x40;
         private const byte CMD_SET_DATETIME = 0x41;
 
+        // Calendar
+        private const byte CMD_CLEAR_CALENDAR = 0x50;
+        private const byte CMD_ADD_CALENDAR_EVT = 0x51;
+
         #endregion
 
         #region Structs
@@ -223,6 +227,29 @@ namespace ViscTronics.Zeitlib
 
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 60)]
             public char[] Message;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = COMMAND_PACKET_SIZE, CharSet=CharSet.Ansi)]
+        public struct CalendarEventPacket
+        {
+            public byte WindowsReserved;
+            public byte Command;
+            public byte Padding;
+
+            public Int16 Index;
+            public byte EventType;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
+            public char[] Label;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
+            public char[] Location;
+
+            public UInt16 color;
+
+            // Weekly calendar events
+            public byte dow;
+            public UInt16 hr;
+            public UInt16 min;
         }
 
         #endregion
@@ -431,9 +458,7 @@ namespace ViscTronics.Zeitlib
             packet.Month = (byte)dt.Month;
             packet.Day = (byte)dt.Day;
 
-            int dow = (int)dt.DayOfWeek - 1;
-            if (dow < 0) dow += 7;
-            packet.DayOfWeek = (byte)(dow); // 0:Monday, 1:Tuesday, ...
+            packet.DayOfWeek = (byte)ConvertDOW(dt.DayOfWeek);
 
             packet.Hour = (byte)dt.Hour;
             packet.Minute = (byte)dt.Minute;
@@ -442,36 +467,62 @@ namespace ViscTronics.Zeitlib
             SendCommandPacket(packet);
         }
 
-        /*public void UpdateDateTime(DateTime time)
+        #endregion
+
+        #region Calendar
+
+        /// <summary>
+        /// Clears the internal calendar table
+        /// </summary>
+        public void ClearCalendar()
+        {
+            SendCommandPacket(new CommandStruct() { Command = CMD_CLEAR_CALENDAR });
+        }
+
+        /// <summary>
+        /// Add an event to the watch.
+        /// May throw an exception if the watch cannot add any more events
+        /// </summary>
+        public void CalendarAddEvent(CalendarItem item)
+        {
+            CalendarEventPacket packet = new CalendarEventPacket();
+
+            packet.Label = new char[20]; // TODO: Find a better way of doing this
+            packet.Location = new char[20];
+            CopyString(packet.Label, item.Label);
+            CopyString(packet.Location, item.Location);
+
+            packet.color = 0; // reserved for future use
+
+            if (item is WeeklyTimetableItem) {
+                WeeklyTimetableItem witem = (item as WeeklyTimetableItem);
+                packet.EventType = 0;
+                packet.dow = (byte)ConvertDOW(witem.DayOfWeek);
+                packet.hr = (UInt16)witem.Time.Hour;
+                packet.min = (UInt16)witem.Time.Minute;
+                //TODO: length of time for the event??
+            }
+
+            packet.Command = CMD_ADD_CALENDAR_EVT;
+            SendCommandPacket(packet);
+        }
+
+        /// <summary>
+        /// Retrieve an event by the specified ID
+        /// </summary>
+        public void CalendarGetEvent(int id)
         {
             throw new NotImplementedException();
         }
 
-        public DateTime GetDateTime()
+        /// <summary>
+        /// Retrieve a list of all events loaded onto the watch
+        /// </summary>
+        public void CalendarGetEvents()
         {
             throw new NotImplementedException();
         }
 
-        public void AddAppointment()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveAppointment()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateAppointment()
-        {
-
-        }
-
-        public void GetAppointments()
-        {
-            // Return a list of appointments stored in the device
-            throw new NotImplementedException();
-        }*/
 
         #endregion
 
@@ -606,6 +657,31 @@ namespace ViscTronics.Zeitlib
         public SensorsQuery GetSensorsInfo()
         {
             return (SensorsQuery)SendCommandPacket(new CommandStruct { Command = CMD_QUERY_SENSORS }, typeof(SensorsQuery));
+        }
+
+        #endregion
+
+
+        #region Util Methods
+
+        private static int ConvertDOW(DayOfWeek dayOfWeek)
+        {
+            int dow = (int)dayOfWeek - 1;
+            if (dow < 0) dow += 7;
+            return (dow); // 0:Monday, 1:Tuesday, ...
+        }
+
+        private static void CopyString(char[] buf, string s)
+        {
+            int i;
+            for (i = 0; i < Math.Min(buf.Length, s.Length); i++ )
+            {
+                buf[i] = s[i];
+            }
+            if (i < buf.Length)
+            {
+                buf[i] = '\0';
+            }
         }
 
         #endregion

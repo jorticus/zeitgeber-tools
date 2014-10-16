@@ -15,7 +15,8 @@ namespace ViscTronics.ZeitCtrl
         private static OptionSet opts;
         private static Zeitgeber zeitgeber;
 
-        public enum CommandLineAction { Unspecified, Ping, Reset, Query, SyncTime, Screenshot };
+        public enum CommandLineAction { Unspecified, Ping, Reset, Query, SyncTime, Screenshot, Calendar };
+        public enum CalendarAction { Unspecified, Clear, Add };
 
         struct Args
         {
@@ -91,6 +92,10 @@ namespace ViscTronics.ZeitCtrl
                         Screenshot(filename);
                         break;
 
+                    case CommandLineAction.Calendar:
+                        CalendarSubCommand(subargs.Skip(1).ToArray());
+                        break;
+
                     default:
                         throw new NotImplementedException("The action is not yet implemented");
 
@@ -118,6 +123,57 @@ namespace ViscTronics.ZeitCtrl
             }
         }
 
+        private static void CalendarSubCommand(string[] calargs)
+        {
+            CalendarAction action = CalendarAction.Unspecified;
+            if (calargs.Length == 0)
+            {
+                Console.WriteLine("No action specified");
+                Console.WriteLine("");
+                ShowCalendarHelp();
+                return;
+            }
+
+            string cal_action_str = calargs[0];
+            try
+            {
+                action = (CalendarAction)Enum.Parse(typeof(CalendarAction), cal_action_str, true);
+            }
+            catch (System.ArgumentException e)
+            {
+                throw new ZeitgeberException(String.Format("Invalid calendar action '{0}'", cal_action_str), e);
+            }
+
+            switch (action)
+            {
+                case CalendarAction.Clear:
+                    zeitgeber.ClearCalendar();
+                    break;
+
+                case CalendarAction.Add:
+                    if (calargs.Length < 4)
+                        throw new Exception("Invalid number of args specified for 'calendar add'");
+
+                    var name = calargs[1];
+                    var day = calargs[2];
+                    var time = calargs[3];
+
+                    CalendarAdd(name, day, time);
+
+                    break;
+
+                default:
+                    throw new NotImplementedException("The calendar action is not yet implemented");
+            }
+        }
+
+        private static void CalendarAdd(string name, string day, string time)
+        {
+            //TODO: Parse args
+            WeeklyTimetableItem item = new WeeklyTimetableItem("label", "loc", DayOfWeek.Monday, DateTime.Now, 1);
+            zeitgeber.CalendarAddEvent(item);
+        }
+
         private static void ShowHelp()
         {
             Console.WriteLine("Zeitctrl v1.0");
@@ -138,6 +194,15 @@ namespace ViscTronics.ZeitCtrl
             Console.WriteLine("        query                Query the watch for information");
             Console.WriteLine("        synctime             Update the watch's time and date to the computer's time");
             Console.WriteLine("        screenshot [filename] Capture a screenshot to file");
+            Console.WriteLine("        calendar [action]    ");
+
+        }
+
+        private static void ShowCalendarHelp()
+        {
+            Console.WriteLine("Calendar Actions:");
+            Console.WriteLine("        clear                 Clear the current calendar contents");
+            Console.WriteLine("        add [name] [day] [time] Add a new calendar item");
         }
 
         /// <summary>

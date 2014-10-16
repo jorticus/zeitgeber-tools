@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Calendar.cs" />
     <Compile Include="WinAPI\SetupAPI.cs" />
     <Compile Include="WinAPI\WinApiFile.cs" />
     <Compile Include="HidDevice.cs" />
